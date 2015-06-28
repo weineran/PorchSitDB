@@ -6,6 +6,7 @@
  * 
  * Each request will be identified by TAG
  * Response will be JSON data
+ */
  
   /**
  * check for POST request 
@@ -17,6 +18,8 @@ function display()
     echo "hello ".$_POST["usermail"];
 }
 
+
+/* Execution begins here */
 if (isset($_POST['tag']) && $_POST['tag'] != '') {
     // get tag
     $tag = $_POST['tag'];
@@ -109,7 +112,7 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
 }
 
 /* AW */
-else if(isset($_POST['action']) || 1==1) {
+else if( isset($_POST['login']) ) {
 	display();
 }
 /* ^^ AW */
