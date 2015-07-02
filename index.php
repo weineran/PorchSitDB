@@ -28,7 +28,7 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
     if ($tag == "web") {
         if (isset($_POST['login']) && $_POST['login'] == 'Login') {
             $tag = 'login';
-        } else if (isset($_POST['new_user']) && $_POST['new_user'] == 'New User') {
+        } else if (isset($_POST['new_user']) && $_POST['new_user'] == 'Register') {
             $tag = 'register';
         }
     }
