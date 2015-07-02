@@ -23,6 +23,15 @@ function display()
 if (isset($_POST['tag']) && $_POST['tag'] != '') {
     // get tag
     $tag = $_POST['tag'];
+
+    // AW if the submission is from web form (rather than mobile) we need to prep the tag
+    if ($tag == "web") {
+        if (isset($_POST['login']) && $_POST['login'] == 'Login') {
+            $tag = 'login';
+        } else if isset($_POST['new_user']) && $_POST['new_user'] == 'New User') {
+            $tag = 'register';
+        }
+    }
  
     // include db handler
     require_once 'include/DB_Functions.php';
