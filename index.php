@@ -30,7 +30,18 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             $tag = 'login';
         } else if (isset($_POST['new_user']) && $_POST['new_user'] == 'Register') {
             $tag = 'register';
+        } 
+        /* ZR testing friendships */
+        else if (isset($_POST['friendships']) && $_POST['friendships'] == 'friendships'){
+            $tag = 'friendships';
         }
+        else if (isset($_POST['pending_friendships']) && $_POST['pending_friendships'] == 'pending_friendships'){
+            $tag = 'pending_friendships';
+        }
+        else if (isset($_POST['request_friend']) && $_POST['request_friend'] == 'request_friend'){
+            $tag = 'request_friend';
+        }
+
     }
  
     // include db handler
@@ -64,7 +75,8 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             $response["error_msg"] = "Incorrect email or password!";
             echo json_encode($response);
         }
-    } else if ($tag == 'register') {
+    } 
+    else if ($tag == 'register') {
         // Request type is Register new user
         $name = $_POST['name'];
         $email = $_POST['email'];
@@ -95,7 +107,14 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
                 echo json_encode($response);
             }
         }
-    } else if ($tag == 'fetch') {
+    } 
+    /* 
+     *   ZR
+     *   This is a generic fetch, it will grab all users data 
+     *   TODO ONLY FOR TESTING PURPOSES. DO NOT IMPLEMENT IN REAL PORCHSIT 
+     */
+    else if ($tag == 'fetch') 
+    {
         // if tag is get neighbors we want to return all neighbors for said user
         // for testing we are just going to return all users
         if($neighbor_data = $db->getUserData())
@@ -107,11 +126,30 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             $response["error_msg"] = "Error occured in requesting neighbor data";
             echo json_encode($response);
         }
+    } 
+    /* ZR this gets the users friend array */
+    else if ($tag == 'friendships'){
 
-
+        /* Example of sql to insert default friendship 
+         * INSERT INTO friendships(uid1, uid2, accepted, broadcast) VALUES (1, 3, 0, 0);
+         */
+        $uid = $_POST['uid'];
+        $friend_array = $db->getFriends($uid);
+        $response = $friend_array;
+        echo json_encode($response);
+    } 
+    else if ($tag == 'pending_friendships'){
+        $uid = $_POST['uid'];
+        $friend_array = $db->getPendingFriends($uid);
     }
+    else if ($tag == 'request_friend'){
+        $uid1 = $_POST['uid1'];
+        $uid2 = $_POST['uid2'];
+        $db->requestFriend($uid1,$uid2);
+    }    
 
 
+    /* ZR default error. Some shit went wrong */
     else {
         // user failed to store
         $response["error"] = TRUE;
