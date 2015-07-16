@@ -42,14 +42,12 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
         else if (isset($_POST['request_friend']) && $_POST['request_friend'] == 'request_friend'){
             $tag = 'request_friend';
         }
-	else if (isset($_POST['set_data']) && $_POST['set_data'] == 'set user data')
-	{
-		$tag = 'set_data';
-	}
-	else if (isset($_POST['get_data']) && $_POST['get_data'] == 'get user data')
-	{
-		$tag = 'get_data';
-	}
+    	else if (isset($_POST['set_data']) && $_POST['set_data'] == 'set user data'){
+    		$tag = 'set_data';
+    	}
+    	else if (isset($_POST['get_data']) && $_POST['get_data'] == 'get user data'){
+    		$tag = 'get_data';
+    	}
     }
  
     // include db handler
@@ -59,7 +57,10 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
     // response Array
     $response = array("tag" => $tag, "error" => FALSE);
  
-    // check for tag type
+    /*
+     * LOGIN 
+     * check for tag type
+     */
     if ($tag == 'login') {
         // Request type is check Login
         $email = $_POST['email'];
@@ -84,6 +85,11 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             echo json_encode($response);
         }
     } 
+
+    /*
+     * REGISTER 
+     * check for tag type
+     */
     else if ($tag == 'register') {
         // Request type is Register new user
         $name = $_POST['name'];
@@ -118,31 +124,38 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
     }
 	
 	/* 
-	 * 	ZR 
+	 * 	SET DATA
 	 *	Testing seting data
-	*/
-	else if ($tag == 'set_data')
+	 */
+	else if($tag == 'set_data')
 	{
 	
-        
-        	$uid = $_POST['uid'];
+        if(!isset($_FILES['image']))
+        {
+            echo '<p>Please select a file</p>';
+        }
+
+        $uid = $_POST['uid'];
 		$data = array();
 		$data['is_sitting'] = $_POST['is_sitting'];
 		$data['location'] = $_POST['location'];
-		$data['image'] = $_FILES['image'];	
+		
+        echo $_FILES['image']['tmp_name'];
+        $data['image'] = $_FILES['image']['tmp_name'];
+
 		$data_set = $db->set_data($uid, $data);
-		if($data_set)
-		{
+		if($data_set){
 			echo "sucessfully set data";
 		}
 		else{
-	                $response["error"] = TRUE;
-                	$response["error_msg"] = "Error occured in Registartion";
-                	echo json_encode($response);
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error occured in Registartion";
+            echo json_encode($response);
 		}
 	} 
+
     /* 
-     *   ZR
+     *   GET DATA
      *   This is a generic fetch, it will grab all users data 
      *   TODO ONLY FOR TESTING PURPOSES. DO NOT IMPLEMENT IN REAL PORCHSIT 
      */
@@ -150,19 +163,19 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
     {
         // if tag is get neighbors we want to return all neighbors for said user
         // for testing we are just going to return all users
-        
         $uid = $_POST['uid'];
-	if($neighbor_data = $db->getUserData($uid))
-        {
+        if($neighbor_data = $db->getUserData($uid)){
             echo json_encode($neighbor_data);
-
         } else { 
             $response["error"] = TRUE;
             $response["error_msg"] = "Error occured in requesting neighbor data";
             echo json_encode($response);
         }
     } 
-    /* ZR this gets the users friend array */
+    /* 
+     * FRIENDSHIPS
+     * ZR this gets the users friend array 
+     */
     else if ($tag == 'friendships'){
 
         /* Example of sql to insert default friendship 

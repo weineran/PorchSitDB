@@ -19,7 +19,7 @@ class DB_Connect {
         $con = mysql_connect("localhost","sitter","sittersgottasit") or die(mysql_error());
         // selecting database
         //mysql_select_db(DB_DATABASE) or die(mysql_error());
-        mysql_select_db("PorchSit_database") or die(mysql_error());
+        mysql_select_db("psdb1") or die(mysql_error());
         // return database handler
     
         return $con;
