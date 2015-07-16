@@ -19,6 +19,7 @@ function display()
 }
 
 
+
 /* Execution begins here */
 if (isset($_POST['tag']) && $_POST['tag'] != '') {
     // get tag
@@ -41,7 +42,14 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
         else if (isset($_POST['request_friend']) && $_POST['request_friend'] == 'request_friend'){
             $tag = 'request_friend';
         }
-
+	else if (isset($_POST['set_data']) && $_POST['set_data'] == 'set user data')
+	{
+		$tag = 'set_data';
+	}
+	else if (isset($_POST['get_data']) && $_POST['get_data'] == 'get user data')
+	{
+		$tag = 'get_data';
+	}
     }
  
     // include db handler
@@ -107,17 +115,44 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
                 echo json_encode($response);
             }
         }
-    } 
+    }
+	
+	/* 
+	 * 	ZR 
+	 *	Testing seting data
+	*/
+	else if ($tag == 'set_data')
+	{
+	
+        
+        	$uid = $_POST['uid'];
+		$data = array();
+		$data['is_sitting'] = $_POST['is_sitting'];
+		$data['location'] = $_POST['location'];
+		$data['image'] = $_FILES['image'];	
+		$data_set = $db->set_data($uid, $data);
+		if($data_set)
+		{
+			echo "sucessfully set data";
+		}
+		else{
+	                $response["error"] = TRUE;
+                	$response["error_msg"] = "Error occured in Registartion";
+                	echo json_encode($response);
+		}
+	} 
     /* 
      *   ZR
      *   This is a generic fetch, it will grab all users data 
      *   TODO ONLY FOR TESTING PURPOSES. DO NOT IMPLEMENT IN REAL PORCHSIT 
      */
-    else if ($tag == 'fetch') 
+    else if ($tag == 'get_data') 
     {
         // if tag is get neighbors we want to return all neighbors for said user
         // for testing we are just going to return all users
-        if($neighbor_data = $db->getUserData())
+        
+        $uid = $_POST['uid'];
+	if($neighbor_data = $db->getUserData($uid))
         {
             echo json_encode($neighbor_data);
 
@@ -154,7 +189,8 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
         // user failed to store
         $response["error"] = TRUE;
         $response["error_msg"] = "Unknow 'tag' value. It should be either 'login' or 'register'";
-        echo json_encode($response);
+        $response["tag"] = "Your tag is set as $tag";
+	echo json_encode($response);
     }
 }
 
