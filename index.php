@@ -154,17 +154,42 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
 		}
 	} 
 
-    /* 
-     *   GET DATA
-     *   This is a generic fetch, it will grab all users data 
-     *   TODO ONLY FOR TESTING PURPOSES. DO NOT IMPLEMENT IN REAL PORCHSIT 
-     */
-    else if ($tag == 'get_data') 
+    /* UPDATE_PROF_PIC */
+    else if ($tag == 'update_prof_pic')
     {
-        // if tag is get neighbors we want to return all neighbors for said user
-        // for testing we are just going to return all users
+        $uid = $_POST['uid'];
+        if($result = $db->update_prof_pic($uid, $_POST['image'])){
+            $response["error"] = FALSE;
+        }else{
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error while uploading profile picture";
+        }
+        echo json_encode($response);
+    }
+
+    /* UPDATE_LOCATION_TIME */
+    else if ($tag == 'update_location_time')
+    {
+        $uid = $_POST['uid'];
+        $location = $_POST['location'];
+        $time = $_POST['time'];
+        $is_sitting = $_POST['is_sitting'];
+
+        if($result = $db->update_location_time($uid, $location, $time, $is_sitting)){
+            $response["error"] = FALSE;
+        }else{  
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error while updating location and time";
+        }
+        echo json_encode($response);
+    }
+
+    /* GET_NEIGHBOR_DATA */
+    else if ($tag == 'get_neighbor_data') 
+    {
         $uid = $_POST['uid'];
         if($neighbor_data = $db->getUserData($uid)){
+            // an array is returned
             echo json_encode($neighbor_data);
         } else { 
             $response["error"] = TRUE;
@@ -172,30 +197,57 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             echo json_encode($response);
         }
     } 
-    /* 
-     * FRIENDSHIPS
-     * ZR this gets the users friend array 
-     */
-    else if ($tag == 'friendships'){
 
-        /* Example of sql to insert default friendship 
-         * INSERT INTO friendships(uid1, uid2, accepted, broadcast) VALUES (1, 3, 0, 0);
-         */
+    /* FRIENDSHIPS */
+    else if ($tag == 'friendships')
+    {
         $uid = $_POST['uid'];
-        $friend_array = $db->getFriends($uid);
-        $response = $friend_array;
-        echo json_encode($response);
+        if($result = $db->getFriends($uid)){
+            echo json_encode($result);
+        }else{
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error occured in requesting to get friendship data";
+            echo json_encode($response);
+        }
     } 
+
+    /* PENDING_FRIENDSHIPS */
     else if ($tag == 'pending_friendships'){
         $uid = $_POST['uid'];
-        $friend_array = $db->getPendingFriends($uid);
+
+        if($result = $db->getPendingFriends($uid)){
+            echo json_encode($result);
+        }else{
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error occured in requesting pending friendships";
+            echo json_encode($response);
     }
+
+    /* REQUEST_FRIEND */ 
     else if ($tag == 'request_friend'){
         $uid1 = $_POST['uid1'];
         $uid2 = $_POST['uid2'];
-        $db->requestFriend($uid1,$uid2);
+        if($result = $db->requestFriend($uid1,$uid2)){
+            echo json_encode($result);
+        }else{
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error occured in requesting friendships";
+            echo json_encode($response);
+        }
     }    
 
+    /* DELETE_FRIEND */ 
+    else if ($tag == 'delete_friend'){
+        $uid1 = $_POST['uid1'];
+        $uid2 = $_POST['uid2'];
+        if($result = $db->deleteFriend($uid1,$uid2)){
+            echo json_encode($result);
+        }else{
+            $response["error"] = TRUE;
+            $response["error_msg"] = "Error occured in deleting friendships";
+            echo json_encode($response);
+        }
+    }    
 
     /* ZR default error. Some shit went wrong */
     else {
@@ -203,7 +255,7 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
         $response["error"] = TRUE;
         $response["error_msg"] = "Unknow 'tag' value. It should be either 'login' or 'register'";
         $response["tag"] = "Your tag is set as $tag";
-	echo json_encode($response);
+	    echo json_encode($response);
     }
 }
 
@@ -218,4 +270,5 @@ else {
     $response["error_msg"] = "Required parameter 'tag' is missing!";
     echo json_encode($response);
 }
+
 ?>

@@ -101,7 +101,7 @@ class DB_Functions {
      *      is_sitting - flag whether user is sitting or not
      * Description: Checks if a user exists using their email.
      */
-    public function update_location_time_($uid, $location, $time, $is_sitting)
+    public function update_location_time($uid, $location, $time, $is_sitting)
     {
         if($is_sitting='0'){
             $sql = "UPDATE users SET is_sitting = 0 WHERE uid='$uid'";
@@ -260,6 +260,7 @@ class DB_Functions {
         return $response;
     }
     
+
 
     /** 
      * REQUESTFRIEND()
