@@ -42,8 +42,8 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
         else if (isset($_POST['request_friend']) && $_POST['request_friend'] == 'request_friend'){
             $tag = 'request_friend';
         }
-    	else if (isset($_POST['set_data']) && $_POST['set_data'] == 'set user data'){
-    		$tag = 'set_data';
+    	else if (isset($_POST['update_prof_pic']) && $_POST['update_prof_pic'] == 'upload profile picture'){
+    		$tag = 'update_prof_pic';
     	}
     	else if (isset($_POST['get_data']) && $_POST['get_data'] == 'get user data'){
     		$tag = 'get_data';
@@ -122,43 +122,14 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             }
         }
     }
-	
-	/* 
-	 * 	SET DATA
-	 *	Testing seting data
-	 */
-	else if($tag == 'set_data')
-	{
-	
-        if(!isset($_FILES['image']))
-        {
-            echo '<p>Please select a file</p>';
-        }
-
-        $uid = $_POST['uid'];
-		$data = array();
-		$data['is_sitting'] = $_POST['is_sitting'];
-		$data['location'] = $_POST['location'];
-		
-        echo $_FILES['image']['tmp_name'];
-        $data['image'] = $_FILES['image']['tmp_name'];
-
-		$data_set = $db->set_data($uid, $data);
-		if($data_set){
-			echo "sucessfully set data";
-		}
-		else{
-            $response["error"] = TRUE;
-            $response["error_msg"] = "Error occured in Registartion";
-            echo json_encode($response);
-		}
-	} 
 
     /* UPDATE_PROF_PIC */
     else if ($tag == 'update_prof_pic')
     {
         $uid = $_POST['uid'];
-        if($result = $db->update_prof_pic($uid, $_POST['image'])){
+        $image = $_FILES['image']['tmp_name'];
+
+        if($result = $db->update_profile_picture($uid, $image)){
             $response["error"] = FALSE;
         }else{
             $response["error"] = TRUE;
@@ -221,6 +192,7 @@ if (isset($_POST['tag']) && $_POST['tag'] != '') {
             $response["error"] = TRUE;
             $response["error_msg"] = "Error occured in requesting pending friendships";
             echo json_encode($response);
+        }
     }
 
     /* REQUEST_FRIEND */ 

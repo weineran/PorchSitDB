@@ -130,19 +130,28 @@ class DB_Functions {
     public function get_neighbor_data($uid)
     {
         $response["user"] = array();
-        $result = mysql_query("SELECT * FROM users WHERE uid = '$uid'") or die(mysql_error());
-        
-        if($result){
-            $row = mysql_fetch_array($result));
-            $tmp = array();
-            $tmp["uid"] = $row["uid"];
-            $tmp["is_sitting"] = $row["is_sitting"];
-            $tmp["location"] = $row["location"];
-            $tmp["image"] = $row["image"];
-            $tmp["name"] = $row["name"];  
+        $response = array();
+        //$result = mysql_query("SELECT * FROM users WHERE uid = '$uid'") or die(mysql_error());
 
-            // push category to final json array
-            array_push($response["user"], $tmp);
+        $result = mysql_query("SELECT * FROM friendships WHERE uid1 = '$uid1' AND accepted = 1 ");
+        if($result){
+            // grabing neighbors
+            while($row = mysql_fetch_array($result)){   
+                $uid2 = $row["uid2"];
+                $friend_result = mysql_query("SELECT * FROM friendships WHERE uid1 = '$uid2' AND uid2 = '$uid1' AND accepted = 1");
+                // grabbing neighbor data
+                while($row2 = mysql_fetch_array($friend_result))
+                {
+                    $neighbor_data = mysql_query("SELECT * FROM users WHERE uid = '$uid2'") or die(mysql_error());
+                    $tmp = array();
+                    $tmp["uid"] = $neighbor_data['uid'];
+                    $tmp["location"] = $neighbor_data['location'];
+                    $tmp["is_sitting"] = $neighbor_data['is_sitting'];
+                    $tmp["image"] = $neighbor_data['image'];
+                    $tmp["time"] = $time['time'];
+                    array_push($response["friends"]["$uid2"], $tmp);    
+                }
+            }
             return $response;
         }else{
             return false;
